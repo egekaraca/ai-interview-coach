@@ -210,8 +210,9 @@ Once backend is running, visit:
 - `GET /api/reports/progress/summary` - Progress summary
 
 ## 🎨 UI Screenshots
+<img width="1440" height="1024" alt="Interview Screen" src="https://github.com/user-attachments/assets/ddef2bec-097f-4c1b-9844-99a8ebbdd56f" />
 
-(Will be added as development progresses)
+
 
 ## 🤝 Contributing
 
@@ -223,10 +224,9 @@ MIT License - feel free to use for your own learning
 
 ## 👤 Author
 
-Your Name
-- Portfolio: (link)
-- LinkedIn: (link)
-- GitHub: (link)
+Ege Karaca
+- LinkedIn: www.linkedin.com/in/ege-karaca
+- GitHub: www.github.com/egekaraca
 
 ## 🙏 Acknowledgments
 
@@ -237,5 +237,4 @@ Your Name
 
 ---
 
-**Status**: 🚧 In Development (Day 1/20 Complete)
-**Next**: Implement video recording and face detection
+**Status**: 🚧 In Development (Day 2/20 Complete)
