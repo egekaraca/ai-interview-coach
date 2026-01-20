@@ -1,0 +1,32 @@
+# FastAPI and server
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Database
+sqlalchemy==2.0.25
+alembic==1.13.1
+
+# Computer Vision & ML
+mediapipe==0.10.9
+opencv-python==4.9.0.80
+numpy>=1.23.5,<2.0.0
+
+# Speech Recognition
+openai-whisper==20231117
+soundfile==0.12.1
+
+# AI Integration
+anthropic==0.18.1
+
+# PDF Generation
+reportlab==4.0.9
+matplotlib==3.8.2
+
+# Utilities
+python-dotenv==1.0.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# CORS
+python-jose[cryptography]==3.3.0
