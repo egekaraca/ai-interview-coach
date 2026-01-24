@@ -11,6 +11,11 @@ import uvicorn
 from backend_app.api.routes import interviews, analysis, reports
 from backend_app.database.database import engine, Base
 
+from dotenv import load_dotenv
+load_dotenv()
+
+from backend_app.api.routes import transcription
+
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
@@ -35,6 +40,7 @@ app.mount("/videos", StaticFiles(directory="../data/videos"), name="videos")
 app.mount("/reports", StaticFiles(directory="../data/reports"), name="reports")
 
 # Include routers
+app.include_router(transcription.router, prefix="/api", tags=["transcription"])
 app.include_router(interviews.router, prefix="/api/interviews", tags=["Interviews"])
 app.include_router(analysis.router, prefix="/api/analysis", tags=["Analysis"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
