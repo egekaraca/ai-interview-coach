@@ -203,35 +203,83 @@ export default function InterviewSession() {
         setIsListening(true)
         isListeningRef.current = true
 
-        const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' })
+        // MediaRecorder ayarları
+        // 'audio/webm' formatı genelde Chrome/Firefox'ta standarttır
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm')
+          ? 'audio/webm'
+          : 'audio/mp4';
+
+        const mediaRecorder = new MediaRecorder(stream, { mimeType });
         const audioChunks = []
 
         mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) audioChunks.push(event.data)
+          if (event.data.size > 0) {
+            audioChunks.push(event.data)
+          }
         }
 
         mediaRecorder.onstop = async () => {
           if (audioChunks.length === 0) return
-          const mockText = " This is a simulated transcription response."
-          setTranscription(prev => prev + mockText)
+
+          // Blob oluştur
+          const audioBlob = new Blob(audioChunks, { type: mimeType })
+
+          // Transkript isteği için FormData hazırla
+          const formData = new FormData()
+          // Dosya ismini 'audio.webm' olarak gönderiyoruz, backend uzantıdan anlayacak
+          formData.append('audio', audioBlob, 'audio.webm')
+
+          try {
+            console.log('📤 Sending audio to backend...')
+            // Backend URL'ini kontrol et. Port 8000 olduğundan emin ol.
+            const response = await fetch('http://localhost:8000/api/transcribe', {
+              method: 'POST',
+              body: formData
+            })
+
+            if (!response.ok) {
+              const errorData = await response.json().catch(() => ({}))
+              throw new Error(errorData.detail || `Server error: ${response.status}`)
+            }
+
+            const data = await response.json()
+
+            if (data.success && data.text) {
+              console.log('✅ Transcription received:', data.text)
+              // Gelen metni mevcut metnin sonuna ekle
+              setTranscription(prev => (prev ? prev + " " : "") + data.text)
+            }
+          } catch (error) {
+            console.error('❌ Transcription error:', error)
+            // Hata durumunda kullanıcıya bilgi verebilirsin (Opsiyonel)
+            // alert('Failed to transcribe. Check console.')
+          }
+
+          // Chunkları temizle
           audioChunks.length = 0
         }
 
         mediaRecorder.start()
 
+        // 5 saniyede bir kaydı durdurup API'ye gönder, sonra tekrar başlat (Continuous Listening)
+        // Bu sayede uzun cevaplarda backend timeout yemez ve anlık yazı gelir.
         const interval = setInterval(() => {
           if (mediaRecorder.state === 'recording') {
              mediaRecorder.stop()
+             // Stop eventi çalıştıktan sonra hemen tekrar başlatmak için küçük bir gecikme gerekebilir
+             // ama genellikle start() hemen çağrılabilir.
+             // Ancak "stream"i kaybetmemek için sadece recorder'ı yönetiyoruz.
              mediaRecorder.start()
           } else {
              clearInterval(interval)
           }
-        }, 3000)
+        }, 5000) // 5 saniyelik parçalar halinde gönder
 
         recognitionRef.current = { mediaRecorder, stream, interval }
       })
       .catch(error => {
         console.error('Microphone error:', error)
+        alert('Could not access microphone.')
       })
   }
 
@@ -241,9 +289,19 @@ export default function InterviewSession() {
   const stopListening = () => {
     if (recognitionRef.current) {
       const { mediaRecorder, stream, interval } = recognitionRef.current
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop()
-      if (stream) stream.getTracks().forEach(track => track.stop())
+
+      // Interval'i temizle ki döngü dursun
       if (interval) clearInterval(interval)
+
+      // Son parçayı göndermek için durdur
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop()
+      }
+
+      // Mikrofon ışığını söndür (Stream tracklerini durdur)
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop())
+      }
 
       isListeningRef.current = false
       setIsListening(false)
