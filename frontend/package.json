@@ -10,14 +10,18 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@mediapipe/camera_utils": "^0.3.1675466862",
     "@mediapipe/drawing_utils": "^0.3.1675466124",
-    "@mediapipe/face_mesh": "^0.4.1633559619",
+    "@mediapipe/face_mesh": "0.4.1657299874",
+    "@studio-freight/react-lenis": "^0.0.47",
     "@tanstack/react-query": "^5.17.19",
     "axios": "^1.6.5",
+    "gsap": "^3.14.2",
     "lucide-react": "^0.312.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-fast-marquee": "^1.6.5",
     "react-router-dom": "^6.21.3",
     "recharts": "^2.10.4"
   },
